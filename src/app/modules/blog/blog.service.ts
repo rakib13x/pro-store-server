@@ -100,9 +100,27 @@ const getAllBlogs = async () => {
   return blogs;
 };
 
+const getBlogById = async (blogId: string) => {
+  const blog = await prisma.blog.findUnique({
+    where: { blogId },
+    include: {
+      author: true,
+      votes: true,
+    },
+  });
+
+  if (!blog) {
+    throw new AppError(404, "Blog not found");
+  }
+
+  return blog;
+};
+
+
 export const BlogService = {
   createBlog,
   updateBlog,
   deleteBlog,
-  getAllBlogs
+  getAllBlogs,
+  getBlogById
 };
