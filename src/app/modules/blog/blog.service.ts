@@ -85,8 +85,24 @@ const deleteBlog = async (blogId: string) => {
   return deletedBlog;
 };
 
+const getAllBlogs = async () => {
+  const blogs = await prisma.blog.findMany({
+    include: {
+      author: true,
+      votes: true,
+    },
+  });
+
+  if (!blogs || blogs.length === 0) {
+    throw new AppError(404, "No blogs found");
+  }
+
+  return blogs;
+};
+
 export const BlogService = {
   createBlog,
   updateBlog,
-  deleteBlog
+  deleteBlog,
+  getAllBlogs
 };
