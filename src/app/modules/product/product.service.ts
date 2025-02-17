@@ -75,6 +75,8 @@ const deleteProduct = async (id: string) => {
         throw new AppError(404, "Product not found");
     }
 
+
+
     const deletedProduct = await prisma.product.update({
         where: { productId: id },
         data: { isDeleted: true },
@@ -94,6 +96,10 @@ const updateProduct = async (id: string, data: IUpdateProduct) => {
 
     if (!existingProduct) {
         throw new AppError(404, "Product not found");
+    }
+
+    if (existingProduct.isDeleted) {
+        throw new AppError(400, "Cannot update a deleted product");
     }
 
 
