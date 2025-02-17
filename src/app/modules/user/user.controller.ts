@@ -3,7 +3,6 @@ import { pickField } from "../../utils/PickValidField";
 import sendResponse from "../../utils/sendResponse";
 import catchAsync from "../../utils/tryCatch";
 import { UserService } from "./user.service";
-import { getCurrentUser } from '../../../../../fofood/src/services/authService/index';
 import { jwtDecode } from "jwt-decode";
 
 
