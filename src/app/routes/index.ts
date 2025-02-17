@@ -2,6 +2,7 @@ import { Router } from "express";
 import { AuthRouter } from "../modules/auth/auth.route";
 import { UserRouter } from "../modules/user/user.router";
 import { productRouter } from "../modules/product/product.router";
+import { ReviewRouter } from "../modules/review/review.route";
 
 
 
@@ -18,6 +19,10 @@ const routeCollection = [
     {
         path: "/auth",
         route: AuthRouter,
+    },
+    {
+        path: "/review",
+        route: ReviewRouter,
     },
 ];
 

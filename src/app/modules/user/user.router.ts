@@ -4,7 +4,7 @@ import { auth } from "../../middleware/auth/auth";
 
 const router = Router();
 router.post("/create-user", UserController.createUser);
-router.get("/", auth("SUPERADMIN"), UserController.getAllUser);
+router.get("/all-user", UserController.getAllUser);
 router.get("/current-user", auth("CUSTOMER"), UserController.currentLoggedInUser);
 
 router.patch(
