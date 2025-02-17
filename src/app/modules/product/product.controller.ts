@@ -29,7 +29,7 @@ const getAllProducts = catchAsync(async (req: Request, res: Response) => {
 
 
 const getProductById = catchAsync(async (req: Request, res: Response) => {
-    const { id } = req.params; // Assuming your route is like /products/:id
+    const { id } = req.params;
     const product = await ProductService.getProductById(id);
 
     sendResponse(res, {

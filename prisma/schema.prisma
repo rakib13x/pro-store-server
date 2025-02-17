@@ -27,6 +27,8 @@ model User {
    createdAt DateTime @default(now())
    updatedAt DateTime @updatedAt
    @@map("user")
+   Review Review[]
+   ReviewVote ReviewVote[]
 }
 
 
@@ -43,6 +45,7 @@ model Product {
   categoryId String
   category Category @relation(fields: [categoryId],references: [categoryId])
   @@map("product")
+  Review Review[]
 }
 
 model Category {
@@ -55,10 +58,48 @@ model Category {
   product    Product[]
 }
 
+model Review {
+  reviewId   String        @id @default(uuid())
+  content    String
+  rating     Int?          // Optional rating field, if needed
+  userId     String
+  productId  String
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+
+
+  user       User          @relation(fields: [userId], references: [id])
+  product    Product       @relation(fields: [productId], references: [productId])
+  votes      ReviewVote[]
+
+  @@map("review")
+}
+
+model ReviewVote {
+  id        String   @id @default(uuid())
+  reviewId  String
+  userId    String
+  vote      Vote
+  createdAt DateTime @default(now())
+
+  review    Review   @relation(fields: [reviewId], references: [reviewId])
+  user      User     @relation(fields: [userId], references: [id])
+
+  // Ensure a user can only vote once per review
+  @@unique([reviewId, userId])
+  @@map("review_vote")
+}
+
+
 
 
 
 enum USER_ROLE {
   CUSTOMER
   SUPERADMIN
+}
+
+enum Vote {
+  LIKE
+  DISLIKE
 }
