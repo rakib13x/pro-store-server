@@ -52,7 +52,21 @@ const getAllProducts = async () => {
     return products;
 };
 
+const getProductById = async (id: string) => {
+    const product = await prisma.product.findUnique({
+        where: { productId: id },
+        include: { category: true },
+    });
+
+    if (!product) {
+        throw new AppError(404, "Product not found");
+    }
+
+    return product;
+};
+
 export const ProductService = {
     createProduct,
-    getAllProducts
+    getAllProducts,
+    getProductById
 };

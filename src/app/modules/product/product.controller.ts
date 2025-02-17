@@ -27,7 +27,22 @@ const getAllProducts = catchAsync(async (req: Request, res: Response) => {
     });
 });
 
+
+const getProductById = catchAsync(async (req: Request, res: Response) => {
+    const { id } = req.params; // Assuming your route is like /products/:id
+    const product = await ProductService.getProductById(id);
+
+    sendResponse(res, {
+        success: true,
+        statusCode: 200,
+        message: "Product retrieved successfully",
+        data: product,
+    });
+});
+
+
 export const ProductController = {
     createProduct,
-    getAllProducts
+    getAllProducts,
+    getProductById
 };
