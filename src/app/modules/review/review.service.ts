@@ -1,7 +1,7 @@
 
 import prisma from "../../client/prisma";
 import { AppError } from "../../Error/AppError";
-import { ICreateReview } from "./review.interface";
+import { ICreateReview, IUpdateReview } from "./review.interface";
 
 const addReview = async (data: ICreateReview) => {
   const { productId, userId, content, rating } = data;
@@ -41,6 +41,29 @@ const addReview = async (data: ICreateReview) => {
   return review;
 };
 
+
+const updateReview = async (id: string, data: IUpdateReview) => {
+
+  const existingReview = await prisma.review.findUnique({
+    where: { reviewId: id },
+  });
+
+  if (!existingReview) {
+    throw new AppError(404, "Review not found");
+  }
+
+  const updatedReview = await prisma.review.update({
+    where: { reviewId: id },
+    data: {
+      ...data,
+    },
+  });
+
+  return updatedReview;
+};
+
+
 export const ReviewService = {
   addReview,
+  updateReview
 };

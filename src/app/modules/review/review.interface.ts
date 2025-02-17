@@ -5,3 +5,9 @@ export interface ICreateReview {
     content: string;
     rating?: number;
 }
+
+
+export interface IUpdateReview {
+    content?: string;
+    rating?: number;
+}
