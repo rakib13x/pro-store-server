@@ -9,3 +9,16 @@ export interface ICreateProduct {
         image: string;
     };
 }
+
+export interface IUpdateProduct {
+    name?: string;
+    description?: string;
+    price?: number;
+    quantity?: number;
+    productPhoto?: string;
+    category?: {
+        name?: string;
+        image?: string;
+    };
+}
+

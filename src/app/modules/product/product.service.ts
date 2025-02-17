@@ -1,6 +1,6 @@
 import prisma from "../../client/prisma";
 import { AppError } from "../../Error/AppError";
-import { ICreateProduct } from "./product.interface";
+import { ICreateProduct, IUpdateProduct } from "./product.interface";
 
 const createProduct = async (data: ICreateProduct) => {
     const { name, description, price, quantity, productPhoto, category } = data;
@@ -84,9 +84,53 @@ const deleteProduct = async (id: string) => {
     return deletedProduct;
 };
 
+
+
+const updateProduct = async (id: string, data: IUpdateProduct) => {
+    // Check if the product exists
+    const existingProduct = await prisma.product.findUnique({
+        where: { productId: id },
+    });
+
+    if (!existingProduct) {
+        throw new AppError(404, "Product not found");
+    }
+
+
+    const updateData: Record<string, any> = {};
+
+    if (data.name !== undefined) updateData.name = data.name;
+    if (data.description !== undefined) updateData.description = data.description;
+    if (data.price !== undefined) updateData.price = data.price;
+    if (data.quantity !== undefined) updateData.quantity = data.quantity;
+    if (data.productPhoto !== undefined) updateData.productPhoto = data.productPhoto;
+
+
+    if (
+        data.category &&
+        (data.category.name !== undefined || data.category.image !== undefined)
+    ) {
+        updateData.category = {
+            update: {
+                ...(data.category.name !== undefined && { name: data.category.name }),
+                ...(data.category.image !== undefined && { image: data.category.image }),
+            },
+        };
+    }
+
+    const updatedProduct = await prisma.product.update({
+        where: { productId: id },
+        data: updateData,
+        include: { category: true },
+    });
+
+    return updatedProduct;
+};
+
 export const ProductService = {
     createProduct,
     getAllProducts,
     getProductById,
-    deleteProduct
+    deleteProduct,
+    updateProduct
 };
