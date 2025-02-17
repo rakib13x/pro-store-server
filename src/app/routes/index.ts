@@ -3,6 +3,7 @@ import { AuthRouter } from "../modules/auth/auth.route";
 import { UserRouter } from "../modules/user/user.router";
 import { productRouter } from "../modules/product/product.router";
 import { ReviewRouter } from "../modules/review/review.route";
+import { BlogRouter } from "../modules/blog/blog.route";
 
 
 
@@ -23,6 +24,10 @@ const routeCollection = [
     {
         path: "/review",
         route: ReviewRouter,
+    },
+    {
+        path: "/blog",
+        route: BlogRouter,
     },
 ];
 

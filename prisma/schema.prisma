@@ -109,7 +109,7 @@ model Blog {
 model BlogVote {
   id        String      @id @default(uuid())
   blogId    String
-  userId    String      // Now required
+  userId    String     
   vote      VoteForBlog
   createdAt DateTime    @default(now())
 
