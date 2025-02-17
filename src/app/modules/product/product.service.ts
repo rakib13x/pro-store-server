@@ -2,11 +2,9 @@ import prisma from "../../client/prisma";
 import { AppError } from "../../Error/AppError";
 import { ICreateProduct } from "./product.interface";
 
-// Create a new product with a nested category creation
 const createProduct = async (data: ICreateProduct) => {
     const { name, description, price, quantity, productPhoto, category } = data;
 
-    // Validate required fields
     if (
         !name ||
         !description ||
@@ -42,6 +40,19 @@ const createProduct = async (data: ICreateProduct) => {
     return product;
 };
 
+
+
+const getAllProducts = async () => {
+    const products = await prisma.product.findMany({
+        include: {
+            category: true,
+        },
+    });
+
+    return products;
+};
+
 export const ProductService = {
     createProduct,
+    getAllProducts
 };
