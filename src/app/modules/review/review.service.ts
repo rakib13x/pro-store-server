@@ -1,7 +1,7 @@
 
 import prisma from "../../client/prisma";
 import { AppError } from "../../Error/AppError";
-import { ICreateReview, IUpdateReview } from "./review.interface";
+import { ICreateReview, ICreateReviewVote, IUpdateReview } from "./review.interface";
 
 const addReview = async (data: ICreateReview) => {
   const { productId, userId, content, rating } = data;
@@ -79,8 +79,54 @@ const deleteReview = async (id: string) => {
 };
 
 
+const createOrUpdateVote = async (data: ICreateReviewVote) => {
+  const { reviewId, userId, vote } = data;
+  const existingReview = await prisma.review.findUnique({
+    where: { reviewId },
+  });
+  if (!existingReview) {
+    throw new AppError(404, "Review not found");
+  }
+
+  const existingVote = await prisma.reviewVote.findUnique({
+    where: { reviewId_userId: { reviewId, userId } },
+  });
+
+  if (existingVote) {
+    const updatedVote = await prisma.reviewVote.update({
+      where: { reviewId_userId: { reviewId, userId } },
+      data: { vote },
+    });
+
+    return updatedVote;
+  } else {
+    const newVote = await prisma.reviewVote.create({
+      data: {
+        reviewId,
+        userId,
+        vote,
+      },
+    });
+
+    return newVote;
+  }
+};
+
+const getVotesForReview = async (reviewId: string) => {
+  const votes = await prisma.reviewVote.findMany({
+    where: { reviewId },
+    select: { vote: true },
+  });
+
+  const likeCount = votes.filter(vote => vote.vote === 'LIKE').length;
+  const dislikeCount = votes.filter(vote => vote.vote === 'DISLIKE').length;
+
+  return { likeCount, dislikeCount };
+};
+
+
 export const ReviewService = {
   addReview,
   updateReview,
-  deleteReview
+  deleteReview, createOrUpdateVote, getVotesForReview,
 };

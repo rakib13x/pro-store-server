@@ -11,3 +11,9 @@ export interface IUpdateReview {
     content?: string;
     rating?: number;
 }
+
+export interface ICreateReviewVote {
+    reviewId: string;
+    userId: string;
+    vote: 'LIKE' | 'DISLIKE';
+}
