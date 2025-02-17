@@ -65,8 +65,28 @@ const getProductById = async (id: string) => {
     return product;
 };
 
+
+const deleteProduct = async (id: string) => {
+    const product = await prisma.product.findUnique({
+        where: { productId: id },
+    });
+
+    if (!product) {
+        throw new AppError(404, "Product not found");
+    }
+
+    const deletedProduct = await prisma.product.update({
+        where: { productId: id },
+        data: { isDeleted: true },
+        include: { category: true },
+    });
+
+    return deletedProduct;
+};
+
 export const ProductService = {
     createProduct,
     getAllProducts,
-    getProductById
+    getProductById,
+    deleteProduct
 };
