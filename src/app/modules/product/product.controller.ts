@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import catchAsync from "../../utils/tryCatch";
 import sendResponse from "../../utils/sendResponse";
 import { ProductService } from "./product.service";
+import { pickField } from "../../utils/PickValidField";
 
 
 const createProduct = catchAsync(async (req: Request, res: Response) => {
@@ -17,13 +18,17 @@ const createProduct = catchAsync(async (req: Request, res: Response) => {
 
 
 const getAllProducts = catchAsync(async (req: Request, res: Response) => {
-    const products = await ProductService.getAllProducts();
+    const paginationData = pickField(req.query, ["page", "limit", "sort"]);
+    const filter = pickField(req.query, ["searchTerm"]);
+
+    const result = await ProductService.getAllProducts(paginationData, filter);
 
     sendResponse(res, {
         success: true,
         statusCode: 200,
         message: "Products retrieved successfully",
-        data: products,
+        data: result.data,
+        meta: result.meta,
     });
 });
 

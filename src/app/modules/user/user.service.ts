@@ -29,7 +29,7 @@ const createUser = async (data: ICreateUser) => {
       data: {
         email,
         password: hashedPass,
-        role, // default CUSTOMER
+        role,
         name,
         mobile: mobileNumber,
         profilePhoto,
@@ -91,9 +91,14 @@ const getAllUser = async (
     where: whereConditons,
     select: {
       id: true,
+      name: true,
       email: true,
       role: true,
+      mobile: true,
+      profilePhoto: true,
+      createdAt: true,
       isBlocked: true,
+
     },
     skip: skip,
     take: limit,
