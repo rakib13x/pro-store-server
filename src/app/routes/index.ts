@@ -4,6 +4,7 @@ import { UserRouter } from "../modules/user/user.router";
 import { productRouter } from "../modules/product/product.router";
 import { ReviewRouter } from "../modules/review/review.route";
 import { BlogRouter } from "../modules/blog/blog.route";
+import { CategoryRouter } from "../modules/category/category.router";
 
 
 
@@ -28,6 +29,10 @@ const routeCollection = [
     {
         path: "/blog",
         route: BlogRouter,
+    },
+    {
+        path: "/category",
+        route: CategoryRouter,
     },
 ];
 
