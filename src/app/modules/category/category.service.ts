@@ -102,7 +102,30 @@ const getAllCategories = async (
 };
 
 
+
+const deleteCategory = async (id: string) => {
+    const category = await prisma.product.findUnique({
+        where: { productId: id },
+    });
+
+    if (!category) {
+        throw new AppError(404, "Category not found");
+    }
+
+
+
+    const deletedCategory = await prisma.product.update({
+        where: { productId: id },
+        data: { isDeleted: true },
+        include: { category: true },
+    });
+
+    return deletedCategory;
+};
+
+
 export const CategoryService = {
     createCategoryIntoDb,
-    getAllCategories
+    getAllCategories,
+    deleteCategory
 }
