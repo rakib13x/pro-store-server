@@ -36,6 +36,10 @@ const getAllCategories = async (
 
     let andCondition: Prisma.CategoryWhereInput[] = [];
 
+    andCondition.push({
+        isDeleted: false,
+    });
+
     if (Object.keys(filterData).length > 0) {
         andCondition.push({
             AND: Object.keys(filterData)
@@ -104,20 +108,17 @@ const getAllCategories = async (
 
 
 const deleteCategory = async (id: string) => {
-    const category = await prisma.product.findUnique({
-        where: { productId: id },
+    const category = await prisma.category.findUnique({
+        where: { categoryId: id },
     });
 
     if (!category) {
         throw new AppError(404, "Category not found");
     }
 
-
-
-    const deletedCategory = await prisma.product.update({
-        where: { productId: id },
+    const deletedCategory = await prisma.category.update({
+        where: { categoryId: id },
         data: { isDeleted: true },
-        include: { category: true },
     });
 
     return deletedCategory;
