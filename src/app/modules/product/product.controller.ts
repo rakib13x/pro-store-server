@@ -6,6 +6,7 @@ import { pickField } from "../../utils/PickValidField";
 
 
 const createProduct = catchAsync(async (req: Request, res: Response) => {
+    console.log(req.body);
     const product = await ProductService.createProduct(req.body);
 
     sendResponse(res, {

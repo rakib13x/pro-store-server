@@ -6,7 +6,7 @@ import { IPaginationOptions } from "../../interface/pagination.interface";
 import { paginationHelper } from "../../utils/paginationHelper";
 
 const createProduct = async (data: ICreateProduct) => {
-    const { name, description, price, quantity, productPhoto, category } = data;
+    const { name, description, price, quantity, productPhoto, categoryId } = data;
 
     if (
         !name ||
@@ -14,9 +14,8 @@ const createProduct = async (data: ICreateProduct) => {
         !price ||
         !quantity ||
         !productPhoto ||
-        !category ||
-        !category.name ||
-        !category.image
+        !categoryId
+
     ) {
         throw new AppError(400, "All fields are required");
     }
@@ -28,16 +27,9 @@ const createProduct = async (data: ICreateProduct) => {
             price,
             quantity,
             productPhoto,
-            category: {
-                create: {
-                    name: category.name,
-                    image: category.image
-                },
-            },
+            categoryId
         },
-        include: {
-            category: true
-        }
+
     });
 
     return product;
@@ -55,6 +47,9 @@ const getAllProducts = async (
     const { searchTerm, ...filterData } = params;
 
     let andCondition: Prisma.ProductWhereInput[] = [];
+    andCondition.push({
+        isDeleted: false,
+    });
 
     if (Object.keys(filterData).length > 0) {
         andCondition.push({

@@ -35,30 +35,31 @@ model User {
 
 
 model Product {
-  productId String @id @default(uuid())
-  name String @db.VarChar(50)
-  price Int
+  productId   String   @id @default(uuid())
+  name        String   @db.VarChar(50)
+  price       Int
   description String
   productPhoto String
-  quantity Int
-  isDeleted Boolean @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  categoryId String
-  category Category @relation(fields: [categoryId],references: [categoryId])
+  quantity    Int
+  isDeleted   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  categoryId  String
+  category    Category @relation(fields: [categoryId], references: [categoryId])  // this is the foreign key relationship
   @@map("product")
-  Review Review[]
+  Review      Review[]
 }
 
 model Category {
   categoryId String   @id @default(uuid())
   name       String   @db.VarChar(50)
-  image      String?  
+  image      String?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   isDeleted  Boolean  @default(false)
   product    Product[]
 }
+
 
 model Review {
   reviewId   String        @id @default(uuid())

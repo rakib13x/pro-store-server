@@ -3,11 +3,8 @@ export interface ICreateProduct {
     description: string;
     price: number;
     quantity: number;
+    categoryId: string
     productPhoto: string;
-    category: {
-        name: string;
-        image: string;
-    };
 }
 
 export interface IUpdateProduct {
