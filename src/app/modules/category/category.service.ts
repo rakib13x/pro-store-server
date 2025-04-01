@@ -80,6 +80,14 @@ const getAllCategories = async (
         where: whereConditions,
         skip: skip,
         take: limit,
+        include: {
+            _count: {
+                select: {
+                    product: true
+                }
+            }
+        }
+        ,
         orderBy: paginationData?.sort
             ? {
                 [paginationData.sort.split("-")[0]]:

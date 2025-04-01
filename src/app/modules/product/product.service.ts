@@ -37,7 +37,6 @@ const createProduct = async (data: ICreateProduct) => {
 
 
 
-// product.service.ts
 const getAllProducts = async (
     paginationData: IPaginationOptions,
     params: Record<string, unknown>
