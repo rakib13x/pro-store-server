@@ -103,7 +103,10 @@ const getAllCategories = async (
     });
 
     return {
-        data: categories,
+        data: categories.map(category => ({
+            ...category,
+            productCount: category._count.product,
+        })),
         meta: {
             page,
             limit,

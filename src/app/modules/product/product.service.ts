@@ -39,16 +39,24 @@ const createProduct = async (data: ICreateProduct) => {
 
 const getAllProducts = async (
     paginationData: IPaginationOptions,
-    params: Record<string, unknown>
+    params: Record<string, unknown>,
+    categoryId?: string
 ) => {
-    const { page, limit, skip } =
-        paginationHelper.calculatePagination(paginationData);
+    const { page, limit, skip } = paginationHelper.calculatePagination(paginationData);
     const { searchTerm, ...filterData } = params;
 
     let andCondition: Prisma.ProductWhereInput[] = [];
     andCondition.push({
         isDeleted: false,
     });
+
+
+    if (categoryId) {
+        andCondition.push({
+            categoryId: categoryId,
+        });
+    }
+
 
     if (Object.keys(filterData).length > 0) {
         andCondition.push({
@@ -69,6 +77,7 @@ const getAllProducts = async (
         });
     }
 
+
     if (searchTerm) {
         andCondition.push({
             OR: [
@@ -85,6 +94,7 @@ const getAllProducts = async (
     const whereConditions: Prisma.ProductWhereInput = {
         AND: andCondition,
     };
+
 
     const products = await prisma.product.findMany({
         where: whereConditions,
@@ -117,6 +127,7 @@ const getAllProducts = async (
         },
     };
 };
+
 
 
 

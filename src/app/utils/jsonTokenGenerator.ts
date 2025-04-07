@@ -3,7 +3,7 @@ import { config } from "../config";
 import { AppError } from "../Error/AppError";
 
 export const tokenGenerator = (
-  data: { userEmail: string; role: string; userName: string; mobile: number; profilePhoto: any },
+  data: { userEmail: string; role: string; userName: string; mobile: number; profilePhoto: any, userID: string },
   expiresIn: string | number = config.jwt_secrete_date || "1h" // Fallback to "1h" if undefined
 ) => {
   const token = jwt.sign(data, config.jwt_secrete_key as string, {

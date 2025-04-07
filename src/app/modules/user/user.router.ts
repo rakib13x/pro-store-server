@@ -14,6 +14,14 @@ router.patch(
 );
 router.patch("/set-pass", UserController.setNewPassword);
 router.patch(
+  "/update-shipping-address",
+  UserController.UpdateShippingAddress
+);
+router.patch(
+  "/update-payment-method",
+  UserController.UpdatePaymentMethod
+);
+router.patch(
   "/update-pass",
   auth("CUSTOMER"),
   UserController.changePassword

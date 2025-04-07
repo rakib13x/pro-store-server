@@ -26,7 +26,7 @@ const userLogin = async (data: { email: string; password: string }) => {
         throw new AppError(404, "User deleted");
     }
 
-    const token = tokenGenerator({ userEmail: user.email, role: user.role, userName: user.name, mobile: user.mobile, profilePhoto: user.profilePhoto });
+    const token = tokenGenerator({ userEmail: user.email, role: user.role, userName: user.name, mobile: user.mobile, profilePhoto: user.profilePhoto, userID: user.id });
 
     if (!token) {
         throw new AppError(404, "Something Went Wrong!! Try again.");

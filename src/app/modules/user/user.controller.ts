@@ -110,6 +110,34 @@ const changePassword = catchAsync(async (req, res) => {
   });
 });
 
+const UpdateShippingAddress = catchAsync(async (req, res) => {
+  // Use userID from request body instead of req.user.id
+  const userId = req.body.userID || req.user.id;
+
+  // Remove userID from the data before passing to service
+  const { userID, ...addressData } = req.body;
+
+  const shippingAddress = await UserService.UpdateShippingAddressService(userId, addressData);
+
+  res.status(200).json({
+    success: true,
+    message: "Shipping address updated successfully",
+    data: shippingAddress,
+  });
+});
+
+
+const UpdatePaymentMethod = catchAsync(async (req, res) => {
+  const userId = req.body.userID || req.user.id;
+  const { userID, ...paymentMethodData } = req.body;
+  const paymentMethod = await UserService.UpdatePaymentMethodService(userId, paymentMethodData);
+  res.status(200).json({
+    success: true,
+    message: "Payment method updated successfully",
+    data: paymentMethod,
+  });
+});
+
 export const UserController = {
   createUser,
   getAllUser,
@@ -117,5 +145,7 @@ export const UserController = {
   deleteUser,
   setNewPassword,
   changePassword,
-  currentLoggedInUser
+  currentLoggedInUser,
+  UpdateShippingAddress,
+  UpdatePaymentMethod,
 };

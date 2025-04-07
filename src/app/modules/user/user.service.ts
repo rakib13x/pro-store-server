@@ -7,6 +7,7 @@ import { Prisma } from "@prisma/client";
 import { AppError } from "../../Error/AppError";
 import { JwtPayload } from "jsonwebtoken";
 import { IPaginationOptions } from "../../interface/pagination.interface";
+import { ICreateUser, IUpdatePaymentMethod, IUpdateShippingAddress } from "./user.interface";
 const createUser = async (data: ICreateUser) => {
   const { email, password, mobile, name, profilePhoto } = data;
 
@@ -98,6 +99,7 @@ const getAllUser = async (
       profilePhoto: true,
       createdAt: true,
       isBlocked: true,
+      address: true
 
     },
     skip: skip,
@@ -209,6 +211,58 @@ const getCurrentUserService = async (userEmail: string) => {
   return user;
 };
 
+const UpdateShippingAddressService = async (
+  userId: string,
+  data: IUpdateShippingAddress
+) => {
+  const { fullName, streetAddress, city, postalCode, country, lat, lng } = data;
+
+  const result = await prisma.user.update({
+    where: { id: userId },
+    data: {
+      address: {
+        upsert: {
+          update: {
+            fullName,
+            streetAddress,
+            city,
+            postalCode,
+            country,
+            lat,
+            lng,
+          },
+          create: {
+            fullName,
+            streetAddress,
+            city,
+            postalCode,
+            country,
+            lat,
+            lng,
+          },
+        },
+      },
+    },
+  });
+
+  return result;
+};
+
+const UpdatePaymentMethodService = async (
+  userId: string,
+  data: IUpdatePaymentMethod
+) => {
+  const { type } = data;
+  const result = await prisma.user.update({
+    where: { id: userId },
+    data: {
+      paymentMethod: type,
+    },
+  });
+  return result;
+};
+
+
 export const UserService = {
   createUser,
   setUserNewPassword,
@@ -216,5 +270,7 @@ export const UserService = {
   userBlock,
   userDelete,
   changePassword,
-  getCurrentUserService
+  getCurrentUserService,
+  UpdateShippingAddressService,
+  UpdatePaymentMethodService
 };

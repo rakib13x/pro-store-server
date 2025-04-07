@@ -21,8 +21,14 @@ const createProduct = catchAsync(async (req: Request, res: Response) => {
 const getAllProducts = catchAsync(async (req: Request, res: Response) => {
     const paginationData = pickField(req.query, ["page", "limit", "sort"]);
     const filter = pickField(req.query, ["searchTerm"]);
+    const categoryId = req.query.categoryId as string;
 
-    const result = await ProductService.getAllProducts(paginationData, filter);
+
+    const result = await ProductService.getAllProducts(paginationData, filter, categoryId);
+    console.log(categoryId, "result from product controller");
+
+    console.log("Filtered products for categoryId", categoryId, ":", result.data);
+
 
     sendResponse(res, {
         success: true,
@@ -34,8 +40,10 @@ const getAllProducts = catchAsync(async (req: Request, res: Response) => {
 });
 
 
+
 const getProductById = catchAsync(async (req: Request, res: Response) => {
     const { id } = req.params;
+    console.log("Product ID:", id);
     const product = await ProductService.getProductById(id);
 
     sendResponse(res, {

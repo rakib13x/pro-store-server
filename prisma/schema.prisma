@@ -21,16 +21,19 @@ model User {
    password String
    profilePhoto String?
    mobile     Int
+   address Json? @db.Json
+   paymentMethod String?
    role USER_ROLE @default(CUSTOMER)
    isDeleted Boolean @default(false)
    isBlocked Boolean @default(false)
    createdAt DateTime @default(now())
    updatedAt DateTime @updatedAt
-   @@map("user")
    Review Review[]
    ReviewVote ReviewVote[]
    Blog Blog[]
    BlogVote BlogVote[]
+   Order Order[]
+   @@map("user")
 }
 
 
@@ -46,8 +49,9 @@ model Product {
   updatedAt   DateTime @updatedAt
   categoryId  String
   category    Category @relation(fields: [categoryId], references: [categoryId])  // this is the foreign key relationship
-  @@map("product")
+  orderItems OrderItem[]
   Review      Review[]
+  @@map("product")
 }
 
 model Category {
@@ -59,6 +63,53 @@ model Category {
   isDeleted  Boolean  @default(false)
   product    Product[]
 }
+
+model Order {
+  orderId String @id @default(uuid())
+  userId String
+  total Float
+  discounts Float?
+  shippingAddress Json @db.Json
+  paymentMethod   String
+  paymentResult   Json?       @db.Json
+  subTotal Float
+  transactionId String?
+  paymentStatus PAYMENT_STATUS @default(PENDING)
+  orderStatus ORDER_STATUS @default(PENDING)
+  user User @relation(fields: [userId], references: [id])
+  couponId       String?        // Relation to Coupon
+  coupon         Coupon?        @relation(fields: [couponId], references: [id])
+  orderItems OrderItem[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+} 
+
+
+model OrderItem {
+  orderItemId String @id @default(uuid())
+  orderId String
+  productId String
+  quantity Int
+  price Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  order Order @relation(fields: [orderId], references: [orderId])
+  product Product @relation(fields: [productId], references: [productId])
+}
+
+model Coupon {
+  id           String   @id @default(uuid())
+  code         String   @unique
+  discount     Float    // Discount amount
+    // Maximum number of times this coupon can be used
+  currentUses  Int      @default(0) // Tracks how many times the coupon has been used
+  expiresAt    DateTime? // Expiration date
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  Order Order[]
+}
+
 
 
 model Review {
@@ -139,4 +190,19 @@ enum Vote {
 enum VoteForBlog {
   UPVOTE
   DOWNVOTE
+}  
+
+enum PAYMENT_STATUS {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+
+enum ORDER_STATUS {
+  PENDING
+  ONGOING
+  DELIVERED
+  CANCELLED
+  RETURNED
 }
