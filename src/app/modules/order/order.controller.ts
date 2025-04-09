@@ -35,7 +35,22 @@ const getAllOrders = catchAsync(async (req: Request, res: Response) => {
 });
 
 
+const getOrderById = catchAsync(async (req: Request, res: Response) => {
+    const { id } = req.params;
+    console.log("Order ID:", id);
+    const order = await OrderService.getOrderById(id);
+
+    sendResponse(res, {
+        success: true,
+        statusCode: 200,
+        message: "Order retrieved successfully",
+        data: order,
+    });
+});
+
+
 export const OrderController = {
     createOrder,
-    getAllOrders
+    getAllOrders,
+    getOrderById
 };

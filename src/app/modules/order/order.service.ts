@@ -59,8 +59,8 @@ const getAllOrders = async (
                         filterData[field] === "true"
                             ? true
                             : filterData[field] === "false"
-                            ? false
-                            : filterData[field];
+                                ? false
+                                : filterData[field];
 
                     return {
                         [field]: { equals: value },
@@ -123,7 +123,25 @@ const getAllOrders = async (
 
 
 
+const getOrderById = async (id: string) => {
+    const order = await prisma.order.findUnique({
+        where: { orderId: id },
+        include: { user: true, orderItems: true },
+    });
+
+    if (!order) {
+        throw new AppError(404, "Order not found");
+    }
+
+    return order;
+};
+
+
+
+
+
 export const OrderService = {
     createOrder,
-    getAllOrders
+    getAllOrders,
+    getOrderById
 };
