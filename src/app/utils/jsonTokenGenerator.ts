@@ -2,12 +2,34 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import { config } from "../config";
 import { AppError } from "../Error/AppError";
 
+export type AddressType = {
+  fullName: string;
+  streetAddress: string;
+  city: string;
+  postalCode: string;
+  country: string;
+};
+
+type PaymentMethodType = string;
+
+type TokenPayloadType = {
+  userEmail: string;
+  role: string;
+  userName: string;
+  mobile: number;
+  profilePhoto: any;
+  userID: string;
+  address?: AddressType | null | undefined;
+  paymentMethod?: PaymentMethodType | null;
+};
+
+// 🔥 FIXED tokenGenerator to accept full TokenPayloadType
 export const tokenGenerator = (
-  data: { userEmail: string; role: string; userName: string; mobile: number; profilePhoto: any, userID: string },
-  expiresIn: string | number = config.jwt_secrete_date || "1h" // Fallback to "1h" if undefined
+  data: TokenPayloadType,
+  expiresIn: string | number = config.jwt_secrete_date || "1h"
 ) => {
   const token = jwt.sign(data, config.jwt_secrete_key as string, {
-    expiresIn, // This will now always be a string or number
+    expiresIn,
   });
   return token;
 };

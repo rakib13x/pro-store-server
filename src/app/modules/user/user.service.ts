@@ -37,7 +37,7 @@ const createUser = async (data: ICreateUser) => {
       },
     });
 
-    const token = tokenGenerator({ userEmail: user.email, role: user.role, userName: user.name, mobile: user.mobile, profilePhoto: user.profilePhoto });
+    const token = tokenGenerator({ userEmail: user.email, role: user.role, userName: user.name, mobile: user.mobile, profilePhoto: user.profilePhoto, userID: user.id });
     return token;
   });
 
@@ -99,7 +99,8 @@ const getAllUser = async (
       profilePhoto: true,
       createdAt: true,
       isBlocked: true,
-      address: true
+      address: true,
+      paymentMethod: true
 
     },
     skip: skip,
@@ -201,6 +202,8 @@ const getCurrentUserService = async (userEmail: string) => {
       role: true,
       createdAt: true,
       updatedAt: true,
+      address: true,
+      paymentMethod: true,
     },
   });
 
@@ -256,8 +259,8 @@ const UpdatePaymentMethodService = async (
   const result = await prisma.user.update({
     where: { id: userId },
     data: {
-      paymentMethod: type,
-    },
+      paymentMethod: type // directly update the string field
+    }
   });
   return result;
 };

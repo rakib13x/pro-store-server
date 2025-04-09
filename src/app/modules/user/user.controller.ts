@@ -129,6 +129,7 @@ const UpdateShippingAddress = catchAsync(async (req, res) => {
 
 const UpdatePaymentMethod = catchAsync(async (req, res) => {
   const userId = req.body.userID || req.user.id;
+  console.log("User ID:", userId); // Log the user ID for debugging
   const { userID, ...paymentMethodData } = req.body;
   const paymentMethod = await UserService.UpdatePaymentMethodService(userId, paymentMethodData);
   res.status(200).json({

@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import prisma from "../../client/prisma";
 
-import { tokenGenerator } from "../../utils/jsonTokenGenerator";
+import { AddressType, tokenGenerator } from "../../utils/jsonTokenGenerator";
 import { sendMail } from "../../utils/nodeMailer";
 import { JwtPayload } from "jsonwebtoken";
 import { AppError } from "../../Error/AppError";
@@ -22,11 +22,22 @@ const userLogin = async (data: { email: string; password: string }) => {
     if (user.isBlocked) {
         throw new AppError(404, "User blocked");
     }
+
     if (user.isDeleted) {
         throw new AppError(404, "User deleted");
     }
 
-    const token = tokenGenerator({ userEmail: user.email, role: user.role, userName: user.name, mobile: user.mobile, profilePhoto: user.profilePhoto, userID: user.id });
+    const address = user.address ? user.address as unknown as AddressType : null;
+    const token = tokenGenerator({
+        userEmail: user.email,
+        role: user.role,
+        userName: user.name,
+        mobile: user.mobile,
+        profilePhoto: user.profilePhoto,
+        userID: user.id,
+        address: address,
+        paymentMethod: user.paymentMethod
+    });
 
     if (!token) {
         throw new AppError(404, "Something Went Wrong!! Try again.");
