@@ -309,10 +309,106 @@ const verifyStripePayment = async (orderId: string, paymentIntentId: string) => 
 };
 
 
+
+
+const getMyOrders = async (
+    userId: string,
+    paginationData: IPaginationOptions,
+    params: Record<string, unknown>
+) => {
+    const { page, limit, skip } = paginationHelper.calculatePagination(paginationData);
+    const { searchTerm, ...filterData } = params;
+
+
+    let andCondition: Prisma.OrderWhereInput[] = [
+        { userId }
+    ];
+
+    if (searchTerm) {
+        andCondition.push({
+            shippingAddress: {
+                path: ['$'],
+                string_contains: searchTerm as string
+            },
+        });
+    }
+
+    if (Object.keys(filterData).length > 0) {
+        andCondition.push({
+            AND: Object.keys(filterData)
+                .filter((field) => Boolean(filterData[field]))
+                .map((field) => {
+                    const value =
+                        filterData[field] === "true"
+                            ? true
+                            : filterData[field] === "false"
+                                ? false
+                                : filterData[field];
+
+                    return { [field]: { equals: value } };
+                }),
+        });
+    }
+
+    const whereConditions: Prisma.OrderWhereInput = {
+        AND: andCondition,
+    };
+
+    const orders = await prisma.order.findMany({
+        where: whereConditions,
+        include: {
+            orderItems: true,
+
+        },
+        skip: skip,
+        take: limit,
+        orderBy: paginationData?.sort
+            ? {
+                [paginationData.sort.split("-")[0]]: paginationData.sort.split("-")[1],
+            }
+            : {
+                createdAt: "desc",
+            },
+    });
+
+    const total = await prisma.order.count({
+        where: whereConditions,
+    });
+
+    return {
+        data: orders,
+        meta: {
+            page,
+            limit,
+            total,
+            totalPage: Math.ceil(total / limit),
+        },
+    };
+};
+
+
+const getMyOrderById = async (userId: string, orderId: string) => {
+    const order = await prisma.order.findUnique({
+        where: { orderId },
+        include: {
+            orderItems: true,
+
+        },
+    });
+
+    if (!order || order.userId !== userId) {
+        throw new AppError(404, "Order not found or you are not authorized to view this order");
+    }
+    return order;
+};
+
+
 export const OrderService = {
     createOrder,
     getAllOrders,
     getOrderById,
     verifyStripePayment,
-    createPaymentIntent
+    createPaymentIntent,
+    getMyOrders,
+    getMyOrderById
 };

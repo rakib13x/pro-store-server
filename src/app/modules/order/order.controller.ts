@@ -120,10 +120,46 @@ const verifyStripePayment = catchAsync(async (req: Request, res: Response) => {
 
 
 
+const getMyOrders = catchAsync(async (req: Request, res: Response) => {
+
+    const userId = req.user.id;
+    const paginationData = pickField(req.query, ["page", "limit", "sort"]);
+    const filter = pickField(req.query, ["searchTerm"]);
+
+    const result = await OrderService.getMyOrders(userId, paginationData, filter);
+
+    sendResponse(res, {
+        success: true,
+        statusCode: 200,
+        message: "User orders retrieved successfully",
+        data: result.data,
+        meta: result.meta,
+    });
+});
+
+
+const getMyOrderById = catchAsync(async (req: Request, res: Response) => {
+    const userId = req.user.id;
+    const { id } = req.params;
+
+    const order = await OrderService.getMyOrderById(userId, id);
+
+    sendResponse(res, {
+        success: true,
+        statusCode: 200,
+        message: "User order retrieved successfully",
+        data: order,
+    });
+});
+
+
+
 export const OrderController = {
     createOrder,
     getAllOrders,
     getOrderById,
     verifyStripePayment,
-    createPaymentIntent
+    createPaymentIntent,
+    getMyOrders,
+    getMyOrderById,
 };
