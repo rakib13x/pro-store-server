@@ -12,6 +12,7 @@ interface IResponseData<T> {
   message: string;
   meta?: TMeta;
   data: T;
+  redirectTo?: string;
 }
 
 const sendResponse = <T>(res: Response, data: IResponseData<T>) => {
@@ -21,6 +22,7 @@ const sendResponse = <T>(res: Response, data: IResponseData<T>) => {
     message: data.message,
     meta: data?.meta,
     data: data?.data,
+    redirectTo: data?.redirectTo,
   });
 };
 

@@ -8,13 +8,25 @@ import { pickField } from "../../utils/PickValidField";
 
 const createOrder = catchAsync(async (req: Request, res: Response) => {
     console.log(req.body);
-    const order = await OrderService.createOrder(req.body);
+    const result = await OrderService.createOrder(req.body);
+
+
+    if (!result.success) {
+        return sendResponse(res, {
+            success: false,
+            statusCode: 400,
+            message: result.message,
+            redirectTo: result.redirectTo,
+            data: null
+        });
+    }
 
     sendResponse(res, {
         success: true,
         statusCode: 201,
         message: "Order created successfully",
-        data: order,
+        data: result.data,
+        redirectTo: result.redirectTo
     });
 });
 
@@ -49,8 +61,69 @@ const getOrderById = catchAsync(async (req: Request, res: Response) => {
 });
 
 
+
+const createPaymentIntent = catchAsync(async (req: Request, res: Response) => {
+
+    const { orderId } = req.body;
+    console.log("Order ID:", orderId);
+
+    if (!orderId) {
+        return sendResponse(res, {
+            success: false,
+            statusCode: 400,
+            message: "Order ID is required",
+            data: null,
+        });
+    }
+
+    const result = await OrderService.createPaymentIntent(orderId);
+
+    if (!result.success) {
+        return sendResponse(res, {
+            success: false,
+            statusCode: 400,
+            message: result.message,
+            data: null,
+        });
+    }
+
+    sendResponse(res, {
+        success: true,
+        statusCode: 200,
+        message: "Payment intent created successfully",
+        data: result.data,
+    });
+});
+
+
+const verifyStripePayment = catchAsync(async (req: Request, res: Response) => {
+    const { orderId, paymentIntentId } = req.body;
+
+    if (!orderId || !paymentIntentId) {
+        return sendResponse(res, {
+            success: false,
+            statusCode: 400,
+            message: "Missing required parameters",
+            data: null,
+        });
+    }
+
+    const result = await OrderService.verifyStripePayment(orderId, paymentIntentId);
+
+    sendResponse(res, {
+        success: true,
+        statusCode: 200,
+        message: "Payment verified successfully",
+        data: result,
+    });
+});
+
+
+
 export const OrderController = {
     createOrder,
     getAllOrders,
-    getOrderById
+    getOrderById,
+    verifyStripePayment,
+    createPaymentIntent
 };
