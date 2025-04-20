@@ -1,4 +1,5 @@
 import { JwtPayload } from "jsonwebtoken";
+import { Request, Response } from "express";
 import { pickField } from "../../utils/PickValidField";
 import sendResponse from "../../utils/sendResponse";
 import catchAsync from "../../utils/tryCatch";
@@ -131,11 +132,27 @@ const UpdatePaymentMethod = catchAsync(async (req, res) => {
   const userId = req.body.userID || req.user.id;
   console.log("User ID:", userId); // Log the user ID for debugging
   const { userID, ...paymentMethodData } = req.body;
+  console.log("update payment method data:", req.body); // Log the payment method data for debugging
   const paymentMethod = await UserService.UpdatePaymentMethodService(userId, paymentMethodData);
   res.status(200).json({
     success: true,
     message: "Payment method updated successfully",
     data: paymentMethod,
+  });
+});
+
+
+
+const getUserById = catchAsync(async (req: Request, res: Response) => {
+  const { userId } = req.params;
+
+  const user = await UserService.getUserById(userId);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: 200,
+    message: "User fetched successfully",
+    data: user,
   });
 });
 
@@ -149,4 +166,5 @@ export const UserController = {
   currentLoggedInUser,
   UpdateShippingAddress,
   UpdatePaymentMethod,
+  getUserById
 };

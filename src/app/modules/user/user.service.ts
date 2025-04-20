@@ -266,6 +266,31 @@ const UpdatePaymentMethodService = async (
 };
 
 
+const getUserById = async (userId: string) => {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      profilePhoto: true,
+      mobile: true,
+      role: true,
+      createdAt: true,
+      updatedAt: true,
+      address: true,
+      paymentMethod: true,
+    },
+  });
+
+  if (!user) {
+    throw new AppError(404, "User not found");
+  }
+
+  return user;
+};
+
+
 export const UserService = {
   createUser,
   setUserNewPassword,
@@ -275,5 +300,6 @@ export const UserService = {
   changePassword,
   getCurrentUserService,
   UpdateShippingAddressService,
-  UpdatePaymentMethodService
+  UpdatePaymentMethodService,
+  getUserById
 };

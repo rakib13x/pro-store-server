@@ -3,6 +3,8 @@ import catchAsync from "../../utils/tryCatch";
 import sendResponse from "../../utils/sendResponse";
 import { OrderService } from "./order.service";
 import { pickField } from "../../utils/PickValidField";
+import prisma from "../../client/prisma";
+import { AppError } from "../../Error/AppError";
 
 
 
@@ -66,6 +68,7 @@ const createPaymentIntent = catchAsync(async (req: Request, res: Response) => {
 
     const { orderId } = req.body;
     console.log("Order ID:", orderId);
+    console.log("Request Body:", req.body);
 
     if (!orderId) {
         return sendResponse(res, {
@@ -121,8 +124,19 @@ const verifyStripePayment = catchAsync(async (req: Request, res: Response) => {
 
 
 const getMyOrders = catchAsync(async (req: Request, res: Response) => {
+    const userEmail = req.user.userEmail;
 
-    const userId = req.user.id;
+    const user = await prisma.user.findUnique({
+        where: { email: userEmail },
+    });
+
+    if (!user) {
+        throw new AppError(404, "User not found");
+    }
+
+    const userId = user.id;
+    console.log("User ID:", userId);
+
     const paginationData = pickField(req.query, ["page", "limit", "sort"]);
     const filter = pickField(req.query, ["searchTerm"]);
 
@@ -139,7 +153,7 @@ const getMyOrders = catchAsync(async (req: Request, res: Response) => {
 
 
 const getMyOrderById = catchAsync(async (req: Request, res: Response) => {
-    const userId = req.user.id;
+    const userId = req.user.userId;
     const { id } = req.params;
 
     const order = await OrderService.getMyOrderById(userId, id);

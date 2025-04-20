@@ -310,7 +310,6 @@ const verifyStripePayment = async (orderId: string, paymentIntentId: string) => 
 
 
 
-
 const getMyOrders = async (
     userId: string,
     paginationData: IPaginationOptions,
@@ -319,20 +318,22 @@ const getMyOrders = async (
     const { page, limit, skip } = paginationHelper.calculatePagination(paginationData);
     const { searchTerm, ...filterData } = params;
 
-
+    // Ensure we filter the orders by the userId
     let andCondition: Prisma.OrderWhereInput[] = [
-        { userId }
+        { userId } // This ensures we only fetch orders for the current user
     ];
 
+    // If there's a search term, filter based on shipping address
     if (searchTerm) {
         andCondition.push({
             shippingAddress: {
-                path: ['$'],
-                string_contains: searchTerm as string
+                contains: searchTerm as string,
+                mode: 'insensitive',
             },
         });
     }
 
+    // If there are additional filters, include them in the query
     if (Object.keys(filterData).length > 0) {
         andCondition.push({
             AND: Object.keys(filterData)
@@ -350,15 +351,16 @@ const getMyOrders = async (
         });
     }
 
+    // Build the final `whereConditions` to include the userId filter and any additional filters
     const whereConditions: Prisma.OrderWhereInput = {
         AND: andCondition,
     };
 
+    // Fetch orders from the database for the authenticated user
     const orders = await prisma.order.findMany({
         where: whereConditions,
         include: {
             orderItems: true,
-
         },
         skip: skip,
         take: limit,
@@ -371,6 +373,7 @@ const getMyOrders = async (
             },
     });
 
+    // Count the total number of orders for pagination
     const total = await prisma.order.count({
         where: whereConditions,
     });

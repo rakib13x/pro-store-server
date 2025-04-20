@@ -13,6 +13,8 @@ router.patch(
   UserController.blockUser
 );
 router.patch("/set-pass", UserController.setNewPassword);
+
+router.get("/:userId", UserController.getUserById);
 router.patch(
   "/update-shipping-address",
   UserController.UpdateShippingAddress
@@ -26,6 +28,8 @@ router.patch(
   auth("CUSTOMER"),
   UserController.changePassword
 );
+
+
 router.patch(
   "/delete/:id",
   auth("SUPERADMIN"),
