@@ -124,17 +124,8 @@ const verifyStripePayment = catchAsync(async (req: Request, res: Response) => {
 
 
 const getMyOrders = catchAsync(async (req: Request, res: Response) => {
-    const userEmail = req.user.userEmail;
-
-    const user = await prisma.user.findUnique({
-        where: { email: userEmail },
-    });
-
-    if (!user) {
-        throw new AppError(404, "User not found");
-    }
-
-    const userId = user.id;
+    console.log("Request reached controller");
+    const userId = req.user.userID;
     console.log("User ID:", userId);
 
     const paginationData = pickField(req.query, ["page", "limit", "sort"]);

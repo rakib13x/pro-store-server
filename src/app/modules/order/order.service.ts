@@ -315,6 +315,7 @@ const getMyOrders = async (
     paginationData: IPaginationOptions,
     params: Record<string, unknown>
 ) => {
+    console.log("User ID:", userId);
     const { page, limit, skip } = paginationHelper.calculatePagination(paginationData);
     const { searchTerm, ...filterData } = params;
 
