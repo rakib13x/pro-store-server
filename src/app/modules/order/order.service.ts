@@ -65,8 +65,16 @@ const createOrder = async (data: ICreateOrder) => {
                 },
                 include: {
                     user: true,
-                    orderItems: true,
-                },
+                    orderItems: {
+                        include: {
+                            product: {
+                                select: {
+                                    productPhoto: true,
+                                },
+                            },
+                        },
+                    },
+                }
             });
 
             // Here you could add cart clearing logic if needed
@@ -177,7 +185,20 @@ const getAllOrders = async (
 const getOrderById = async (id: string) => {
     const order = await prisma.order.findUnique({
         where: { orderId: id },
-        include: { user: true, orderItems: true },
+        include: {
+            user: true,
+            orderItems: {
+                include: {
+                    product: {
+                        select: {
+                            productId: true,
+                            name: true,
+                            productPhoto: true
+                        }
+                    }
+                }
+            }
+        },
     });
 
     if (!order) {

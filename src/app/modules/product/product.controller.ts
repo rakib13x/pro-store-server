@@ -80,10 +80,23 @@ const updateProduct = catchAsync(async (req: Request, res: Response) => {
 });
 
 
+export const getTopSellingProducts = catchAsync(async (_req: Request, res: Response) => {
+    const products = await ProductService.getTopSellingProducts();
+    sendResponse(res, {
+        success: true,
+        statusCode: 200,
+        message: "Top selling products retrieved successfully",
+        data: products,
+    });
+});
+
+
+
 export const ProductController = {
     createProduct,
     getAllProducts,
     getProductById,
     deleteProduct,
-    updateProduct
+    updateProduct,
+    getTopSellingProducts
 };

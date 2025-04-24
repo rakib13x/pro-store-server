@@ -212,10 +212,44 @@ const updateProduct = async (id: string, data: IUpdateProduct) => {
     return updatedProduct;
 };
 
+export const getTopSellingProducts = async (): Promise<any[]> => {
+
+    const sales = await prisma.orderItem.groupBy({
+        by: ["productId"],
+        _sum: { quantity: true },
+        orderBy: { _sum: { quantity: "desc" } },
+        take: 8,
+    });
+
+    const soldProductIds = sales.map(s => s.productId);
+
+
+    const soldProducts = await prisma.product.findMany({
+        where: { productId: { in: soldProductIds }, isDeleted: false },
+        include: { category: true },
+    });
+
+
+    if (soldProducts.length < 8) {
+        const additional = await prisma.product.findMany({
+            where: { productId: { notIn: soldProductIds }, isDeleted: false },
+            orderBy: { createdAt: "desc" },
+            take: 8 - soldProducts.length,
+            include: { category: true },
+        });
+        return [...soldProducts, ...additional];
+    }
+
+    return soldProducts;
+};
+
+
+
 export const ProductService = {
     createProduct,
     getAllProducts,
     getProductById,
     deleteProduct,
-    updateProduct
+    updateProduct,
+    getTopSellingProducts
 };
