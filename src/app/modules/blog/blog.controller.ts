@@ -1,4 +1,3 @@
-// blog.controller.ts
 import { Request, Response } from "express";
 import catchAsync from "../../utils/tryCatch";
 import sendResponse from "../../utils/sendResponse";
@@ -27,7 +26,6 @@ const updateBlog = catchAsync(async (req: Request, res: Response) => {
     });
 });
 
-
 const deleteBlog = catchAsync(async (req: Request, res: Response) => {
     const { id } = req.params;
     const deletedBlog = await BlogService.deleteBlog(id);
@@ -40,7 +38,6 @@ const deleteBlog = catchAsync(async (req: Request, res: Response) => {
     });
 });
 
-
 const getAllBlogs = catchAsync(async (req: Request, res: Response) => {
     const blogs = await BlogService.getAllBlogs();
 
@@ -51,8 +48,6 @@ const getAllBlogs = catchAsync(async (req: Request, res: Response) => {
         data: blogs,
     });
 });
-
-
 
 const getBlogById = catchAsync(async (req: Request, res: Response) => {
     const { id } = req.params;
