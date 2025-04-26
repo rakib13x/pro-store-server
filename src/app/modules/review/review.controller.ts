@@ -6,7 +6,9 @@ import { ReviewService } from "./review.service";
 import { ICreateReviewVote } from "./review.interface";
 
 const addReview = catchAsync(async (req: Request, res: Response) => {
+    console.log("req.body is:", req.body);
     const review = await ReviewService.addReview(req.body);
+    console.log("request has gone to service:", review);
 
     sendResponse(res, {
         success: true,
@@ -15,6 +17,23 @@ const addReview = catchAsync(async (req: Request, res: Response) => {
         data: review,
     });
 });
+
+
+
+const getReviewsByProductId = catchAsync(async (req: Request, res: Response) => {
+    const { productId } = req.params;
+    const reviews = await ReviewService.getReviewsByProductId(productId);
+
+    sendResponse(res, {
+        success: true,
+        statusCode: 200,
+        message: "Reviews fetched successfully",
+        data: reviews,
+    });
+});
+
+
+
 
 
 const updateReview = catchAsync(async (req: Request, res: Response) => {
@@ -30,7 +49,7 @@ const updateReview = catchAsync(async (req: Request, res: Response) => {
 });
 
 const deleteReview = catchAsync(async (req: Request, res: Response) => {
-    const { id } = req.params; // Expects route: /reviews/:id
+    const { id } = req.params;
     const review = await ReviewService.deleteReview(id);
 
     sendResponse(res, {
@@ -71,5 +90,6 @@ export const ReviewController = {
     updateReview,
     deleteReview,
     createOrUpdateVote,
-    getVotesForReview
+    getVotesForReview,
+    getReviewsByProductId
 };

@@ -1,9 +1,8 @@
-
 import prisma from "../../client/prisma";
 import { AppError } from "../../Error/AppError";
 import { ICreateReview, ICreateReviewVote, IUpdateReview } from "./review.interface";
 
-const addReview = async (data: ICreateReview) => {
+const addReview = async (data: any) => {
   const { productId, userId, content, rating } = data;
 
   if (!productId || !userId || !content) {
@@ -24,6 +23,31 @@ const addReview = async (data: ICreateReview) => {
     throw new AppError(404, "User not found");
   }
 
+  const hasPurchased = await prisma.orderItem.findFirst({
+    where: {
+      productId,
+      order: {
+        userId,
+        paymentStatus: "COMPLETED",
+      }
+    }
+  });
+
+  if (!hasPurchased) {
+    throw new AppError(403, "You can only review products you have purchased");
+  }
+
+
+  const existingReview = await prisma.review.findFirst({
+    where: {
+      productId,
+      userId
+    }
+  });
+
+  if (existingReview) {
+    throw new AppError(400, "You have already reviewed this product");
+  }
 
   const review = await prisma.review.create({
     data: {
@@ -42,8 +66,39 @@ const addReview = async (data: ICreateReview) => {
 };
 
 
-const updateReview = async (id: string, data: IUpdateReview) => {
+const getReviewsByProductId = async (productId: string) => {
+  const reviews = await prisma.review.findMany({
+    where: {
+      productId,
+    },
+    include: {
+      user: true,
+    },
+  });
 
+
+  const reviewsWithVotes = await Promise.all(
+    reviews.map(async (review) => {
+      const votes = await prisma.reviewVote.findMany({
+        where: { reviewId: review.reviewId },
+        select: { vote: true },
+      });
+
+      const likeCount = votes.filter((vote) => vote.vote === 'LIKE').length;
+      const dislikeCount = votes.filter((vote) => vote.vote === 'DISLIKE').length;
+
+      return {
+        ...review,
+        votes: { likeCount, dislikeCount },
+      };
+    })
+  );
+
+  return reviewsWithVotes;
+};
+
+
+const updateReview = async (id: string, data: IUpdateReview) => {
   const existingReview = await prisma.review.findUnique({
     where: { reviewId: id },
   });
@@ -77,7 +132,6 @@ const deleteReview = async (id: string) => {
 
   return deletedReview;
 };
-
 
 const createOrUpdateVote = async (data: ICreateReviewVote) => {
   const { reviewId, userId, vote } = data;
@@ -124,9 +178,11 @@ const getVotesForReview = async (reviewId: string) => {
   return { likeCount, dislikeCount };
 };
 
-
 export const ReviewService = {
   addReview,
   updateReview,
-  deleteReview, createOrUpdateVote, getVotesForReview,
+  deleteReview,
+  createOrUpdateVote,
+  getVotesForReview,
+  getReviewsByProductId
 };
